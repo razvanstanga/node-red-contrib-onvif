@@ -18,7 +18,7 @@
     ],
     "node-red": {
         "nodes": {
-            "ONVIF Snapshot": "onvif/index.js"
+            "ONVIF Snapshot": "onvif/snapshot.js"
         }
     },
     "author": {

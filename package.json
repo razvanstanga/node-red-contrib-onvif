@@ -1,0 +1,32 @@
+{
+    "name": "node-red-contrib-onvif",
+    "version": "0.0.1",
+    "description": "A Node-RED node that interacts with ip cameras using the ONVIF protocol",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/razvanstanga/node-red-contrib-onvif.git"
+    },
+    "dependencies": {
+        "node-onvif": "^0.1.7"
+    },
+    "inputs": 0,
+    "keywords": [
+        "node-red",
+        "node-red-contrib",
+        "onvif",
+        "ipcam"
+    ],
+    "node-red": {
+        "nodes": {
+            "ONVIF Snapshot": "onvif/index.js"
+        }
+    },
+    "author": {
+        "name": "Razvan Stanga"
+    },
+    "license": "Apache",
+    "bugs": {
+        "url": "https://github.com/razvanstanga/node-red-contrib-onvif/issues"
+    },
+    "homepage": "https://github.com/razvanstanga/node-red-contrib-onvif"
+}

@@ -4,19 +4,59 @@ module.exports = (RED) => {
 
     function snapshot(config) {
         RED.nodes.createNode(this, config);
-        this.active = config.active;
-        var node = this;
+        let node = this;
+        let msg = {
+            name: config.name,
+            url: config.url,
+            error: false
+        };
+
+        node.on("input", function (msg) {
+            try {
+                let _msg = JSON.parse(msg.payload);
+                if (typeof _msg === "object") {
+                    if(_msg.hasOwnProperty("url")) {
+                        msg.url = _msg.url;
+                    }
+                    if(_msg.hasOwnProperty("username")) {
+                        msg.username = _msg.username;
+                    }
+                    if(_msg.hasOwnProperty("password")) {
+                        msg.password = _msg.password;
+                    }
+                    if(_msg.hasOwnProperty("interval")) {
+                        msg.interval = _msg.interval;
+                    }
+                    if(_msg.hasOwnProperty("active")) {
+                        msg.active = _msg.active;
+                    }
+                }
+            }
+            catch (ex) {}
+
+            config.url = msg.url || config.url;
+            config.username = msg.username || config.username;
+            config.password = msg.password || config.password;
+            config.interval = msg.interval || config.interval;
+            node.active = config.active = msg.active || config.active;
+
+            if(msg.hasOwnProperty("payload")) {
+                msg._payload = msg.payload;
+            }
+            msg.node = this.type;
+
+            runInterval(msg, node, config);
+        });
 
         if (!config.url) {
             node.warn("No URL is specified. Please specify in node configuration.");
             return;
         }
-        if (node.active == false) return;
 
         config.interval = parseInt(config.interval);
         node.intervalId = null;
 
-        runInterval(node, config);
+        runInterval(msg, node, config);
 
         node.on("close", () => {
             if (this.intervalId != null) {
@@ -27,8 +67,8 @@ module.exports = (RED) => {
     RED.nodes.registerType("ONVIF Snapshot", snapshot);
 
     RED.httpAdmin.post("/onvif-snapshot/:id/:state", RED.auth.needsPermission("onvif-snapshot.write"), (req, res) => {
-        var node = RED.nodes.getNode(req.params.id);
-        var state = req.params.state;
+        let node = RED.nodes.getNode(req.params.id);
+        let state = req.params.state;
         if (node !== null && typeof node !== "undefined" ) {
             if (state === "enable") {
                 node.active = true;
@@ -44,17 +84,12 @@ module.exports = (RED) => {
         }
     });
 
-    function runInterval(node, config) {
+    function runInterval(msg, node, config) {
         if (node.intervalId != null) {
             clearInterval(node.intervalId);
         }
+        if (node.active == false) return;
         node.log("URL (" + config.interval + " seconds): " + config.url);
-
-        let msg = {
-            name: config.name,
-            url: config.url,
-            error: false
-        };
 
         let fetch = function() {
             let onvifInstance = new onvif.OnvifDevice({

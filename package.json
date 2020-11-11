@@ -1,6 +1,6 @@
 {
     "name": "node-red-contrib-onvif",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "A Node-RED node that interacts with ip cameras using the ONVIF protocol",
     "repository": {
         "type": "git",
@@ -9,7 +9,7 @@
     "dependencies": {
         "node-onvif": "^0.1.7"
     },
-    "inputs": 0,
+    "inputs": 1,
     "keywords": [
         "node-red",
         "node-red-contrib",

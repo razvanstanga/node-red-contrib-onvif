@@ -18,7 +18,50 @@
 </script>
 
 <script type="text/x-red" data-help-name="ONVIF Snapshot">
-    <p>Fetches a snapshot from an ip camera</p>
+<h2>Inputs</h2>
+<p>You can wire inject nodes to the input of this node and send the following in <code>msg.payload</code>.</p>
+<table>
+    <thead>
+        <tr>
+            <th>msg.payload</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>url</code></td>
+            <td>IP camera URL</td>
+        </tr>
+        <tr>
+            <td><code>username</code></td>
+            <td>IP camera username</td>
+        </tr>
+        <tr>
+            <td><code>password</code></td>
+            <td>IP camera password</td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>Output</h2>
+<table>
+    <thead>
+        <tr>
+            <th>msg.payload</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>image.base64</code></td>
+            <td>Base64 encoded image</td>
+        </tr>
+        <tr>
+            <td><code>image.binary</code></td>
+            <td>Binary image</td>
+        </tr>
+    </tbody>
+</table>
 </script>
 
 <script type="text/javascript">

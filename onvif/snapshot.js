@@ -10,6 +10,9 @@ module.exports = (RED) => {
             try {
                 let _msg = JSON.parse(msg.payload);
                 if (typeof _msg === "object") {
+                    if(_msg.hasOwnProperty("name")) {
+                        msg.name = _msg.name;
+                    }
                     if(_msg.hasOwnProperty("url")) {
                         msg.url = _msg.url;
                     }
@@ -23,7 +26,8 @@ module.exports = (RED) => {
             }
             catch (ex) {}
 
-            config.url = msg.url || config.url;
+            config.name     = msg.name || config.name;
+            config.url      = msg.url || config.url;
             config.username = msg.username || config.username;
             config.password = msg.password || config.password;
 
@@ -55,8 +59,13 @@ module.exports = (RED) => {
         }).then((res) => {
             let prefix = 'data:' + res.headers['content-type'] + ';base64,';
             let base64Image = Buffer.from(res.body, 'binary').toString('base64');
-            msg.payload = prefix + base64Image;
-            msg.binaryImage = res.body;
+            msg.payload = {
+                config: config,
+                image: {
+                    base64: (prefix + base64Image),
+                    binary: res.body
+                }
+            };
             node.send(msg);
         }).catch((error) => {
             msg.payload = null;

@@ -15,6 +15,10 @@
         <label for="node-input-password"><i class="fa fa-key"></i> Password</label>
         <input type="text" id="node-input-password" placeholder="Password">
     </div>
+    <div class="form-row">
+        <label for="node-input-resize"><i class="fa fa-file-code-o"></i> Resize</label>
+        <input type="text" id="node-input-resize" placeholder='{"width": 800}'>
+    </div>
 </script>
 
 <script type="text/x-red" data-help-name="ONVIF Snapshot">
@@ -29,6 +33,10 @@
     </thead>
     <tbody>
         <tr>
+            <td><code>name</code></td>
+            <td>IP camera name</td>
+        </tr>
+        <tr>
             <td><code>url</code></td>
             <td>IP camera URL</td>
         </tr>
@@ -39,6 +47,14 @@
         <tr>
             <td><code>password</code></td>
             <td>IP camera password</td>
+        </tr>
+        <tr>
+            <td><code>resize.width</code></td>
+            <td>Resize image by width</td>
+        </tr>
+        <tr>
+            <td><code>resize.height</code></td>
+            <td>Resize image by height</td>
         </tr>
     </tbody>
 </table>

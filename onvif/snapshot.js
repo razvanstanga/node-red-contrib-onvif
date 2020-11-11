@@ -5,11 +5,6 @@ module.exports = (RED) => {
     function snapshot(config) {
         RED.nodes.createNode(this, config);
         let node = this;
-        let msg = {
-            name: config.name,
-            url: config.url,
-            error: false
-        };
 
         node.on("input", function (msg) {
             try {
@@ -24,9 +19,6 @@ module.exports = (RED) => {
                     if(_msg.hasOwnProperty("password")) {
                         msg.password = _msg.password;
                     }
-                    if(_msg.hasOwnProperty("active")) {
-                        msg.active = _msg.active;
-                    }
                 }
             }
             catch (ex) {}
@@ -34,7 +26,6 @@ module.exports = (RED) => {
             config.url = msg.url || config.url;
             config.username = msg.username || config.username;
             config.password = msg.password || config.password;
-            node.active = config.active = msg.active || config.active;
 
             if(msg.hasOwnProperty("payload")) {
                 msg._payload = msg.payload;
@@ -52,8 +43,6 @@ module.exports = (RED) => {
     RED.nodes.registerType("ONVIF Snapshot", snapshot);
 
     function run(msg, node, config) {
-        if (node.active == false) return;
-
         let onvifInstance = new onvif.OnvifDevice({
             xaddr: config.url,
             user : config.username,

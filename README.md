@@ -16,6 +16,9 @@ msg.payload = {
     url: "", // IP camera URL
     username: "", // IP camera username
     password: "", // IP camera password
+    resize: {
+        width: 800 // resize by width or height
+    }
 }
 ```
 

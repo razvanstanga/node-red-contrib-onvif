@@ -24,9 +24,6 @@ module.exports = (RED) => {
                     if(_msg.hasOwnProperty("password")) {
                         msg.password = _msg.password;
                     }
-                    if(_msg.hasOwnProperty("interval")) {
-                        msg.interval = _msg.interval;
-                    }
                     if(_msg.hasOwnProperty("active")) {
                         msg.active = _msg.active;
                     }
@@ -37,7 +34,6 @@ module.exports = (RED) => {
             config.url = msg.url || config.url;
             config.username = msg.username || config.username;
             config.password = msg.password || config.password;
-            config.interval = msg.interval || config.interval;
             node.active = config.active = msg.active || config.active;
 
             if(msg.hasOwnProperty("payload")) {
@@ -45,77 +41,38 @@ module.exports = (RED) => {
             }
             msg.node = this.type;
 
-            runInterval(msg, node, config);
+            run(msg, node, config);
         });
 
         if (!config.url) {
             node.warn("No URL is specified. Please specify in node configuration.");
             return;
         }
-
-        config.interval = parseInt(config.interval);
-        node.intervalId = null;
-
-        runInterval(msg, node, config);
-
-        node.on("close", () => {
-            if (this.intervalId != null) {
-                clearInterval(this.intervalId);
-            }
-        });
     }
     RED.nodes.registerType("ONVIF Snapshot", snapshot);
 
-    RED.httpAdmin.post("/onvif-snapshot/:id/:state", RED.auth.needsPermission("onvif-snapshot.write"), (req, res) => {
-        let node = RED.nodes.getNode(req.params.id);
-        let state = req.params.state;
-        if (node !== null && typeof node !== "undefined" ) {
-            if (state === "enable") {
-                node.active = true;
-                res.sendStatus(200);
-            } else if (state === "disable") {
-                node.active = false;
-                res.sendStatus(201);
-            } else {
-                res.sendStatus(404);
-            }
-        } else {
-            res.sendStatus(404);
-        }
-    });
-
-    function runInterval(msg, node, config) {
-        if (node.intervalId != null) {
-            clearInterval(node.intervalId);
-        }
+    function run(msg, node, config) {
         if (node.active == false) return;
-        node.log("URL (" + config.interval + " seconds): " + config.url);
 
-        let fetch = function() {
-            let onvifInstance = new onvif.OnvifDevice({
-                xaddr: config.url,
-                user : config.username,
-                pass : config.password
-            });
+        let onvifInstance = new onvif.OnvifDevice({
+            xaddr: config.url,
+            user : config.username,
+            pass : config.password
+        });
 
-            onvifInstance.init().then((info) => {
-                node.log('Fetching snapshot from ' + config.url);
-                return onvifInstance.fetchSnapshot();
-            }).then((res) => {
-                let prefix = 'data:' + res.headers['content-type'] + ';base64,';
-                let base64Image = Buffer.from(res.body, 'binary').toString('base64');
-                msg.payload = prefix + base64Image;
-                msg.binaryImage = res.body;
-                node.send(msg);
-            }).catch((error) => {
-                msg.payload = null;
-                msg.error = error;
-                node.send(msg);
-            });
-        }
-        fetch();
-        node.intervalId = setInterval(() => {
-            fetch();
-        }, config.interval * 1000);
+        onvifInstance.init().then((info) => {
+            node.log('Fetching snapshot from ' + config.url);
+            return onvifInstance.fetchSnapshot();
+        }).then((res) => {
+            let prefix = 'data:' + res.headers['content-type'] + ';base64,';
+            let base64Image = Buffer.from(res.body, 'binary').toString('base64');
+            msg.payload = prefix + base64Image;
+            msg.binaryImage = res.body;
+            node.send(msg);
+        }).catch((error) => {
+            msg.payload = null;
+            msg.error = error;
+            node.send(msg);
+        });
     }
 }

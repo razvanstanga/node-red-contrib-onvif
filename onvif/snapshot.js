@@ -1,7 +1,12 @@
 module.exports = (RED) => {
     "use strict";
     let onvif = require("node-onvif");
-    const sharp = require('sharp');
+    let isSharpAvailable = false;
+    try {
+        const sharp = require('sharp');
+        isSharpAvailable = true;
+    }
+    catch (ex) {}
 
     function snapshot(config) {
         RED.nodes.createNode(this, config);
@@ -43,7 +48,7 @@ module.exports = (RED) => {
         }).then((res) => {
             let prefix = 'data:' + res.headers['content-type'] + ';base64,';
 
-            if (config.resize) {
+            if (config.resize && isSharpAvailable) {
                 sharp(Buffer.from(res.body, 'binary'))
                     .resize(config.resize)
                     .toFormat('png')

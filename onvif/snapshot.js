@@ -2,8 +2,9 @@ module.exports = (RED) => {
     "use strict";
     let onvif = require("node-onvif");
     let isSharpAvailable = false;
+    let sharp;
     try {
-        const sharp = require('sharp');
+        sharp = require('sharp');
         isSharpAvailable = true;
     }
     catch (ex) {}
